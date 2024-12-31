@@ -1,16 +1,33 @@
 {
   "compilerOptions": {
-    "lib": ["DOM", "ES2021", "DOM.Iterable"],
-    "module": "ESNext",
-    "jsx": "react-jsx",
-    "target": "ESNext",
-    "strict": true,
+    "lib": [
+      "es2021",
+      "dom",
+      "DOM.Iterable"
+    ],
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "bundler",
-    "useDefineForClassFields": true,
-    "noImplicitAny": false
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "paths": {},
+    "target": "ES2015",
+    "jsx": "react",
+    "module": "ESNext",
+    "allowJs": true,
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "declaration": true,
+    "rootDir": "src",
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

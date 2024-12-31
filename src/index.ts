@@ -1,8 +1,8 @@
-import { createStore as createSafeStore, useUpdateEffect } from './utils';
 import { useMemo } from 'react';
 import { useStore, type StoreApi } from 'zustand';
 import { type ExtractState } from './common';
 import { type StoreWithSelector } from './selector';
+import { createStore as createSafeStore, useUpdateEffect } from './utils';
 
 export * from './creator';
 export * from './selector';
@@ -15,7 +15,9 @@ function createUseStore<T extends StoreApi<any>>(store) {
   function useWrapStore<S extends (state: ExtractState<T>) => any>(
     selector: S,
   ): ReturnType<typeof useStore<T, ReturnType<S>>>;
-  function useWrapStore<S extends (state: ExtractState<T>) => any>(selector?: S) {
+  function useWrapStore<S extends (state: ExtractState<T>) => any>(
+    selector?: S,
+  ) {
     return useStore(store, selector as any);
   }
 
@@ -34,9 +36,13 @@ export function createStoreHook<
 export function useExtendStore<
   T extends object,
   E extends object = {},
-  G extends (...args: string[]) => any = () => {},
+  G extends (...args: any[]) => any = () => {},
   C extends object = {},
->(store: StoreApi<T> & { get: G }, depsState: E, computedState?: (state: T & E) => C) {
+>(
+  store: StoreApi<T> & { get: G },
+  depsState: E,
+  computedState?: (state: T & E) => C,
+) {
   useMemo(() => {
     depsState && store.setState(depsState);
   }, []);
@@ -47,7 +53,13 @@ export function useExtendStore<
     }
   }, [...Object.entries(depsState || {}).flat()]);
 
-  return useMemo(() => (store as unknown as StoreApi<T & E> & StoreWithSelector<T & E>).compute(computedState), []);
+  return useMemo(
+    () =>
+      (store as unknown as StoreApi<T & E> & StoreWithSelector<T & E>).compute(
+        computedState,
+      ),
+    [],
+  );
 }
 
 const INVALID_STORE_VALUE = Object.freeze(
@@ -57,28 +69,40 @@ const INVALID_STORE_VALUE = Object.freeze(
     },
     {
       get(_, p) {
-        console.error(new Error(`取值 ${String(p)} 异常，请检查 Provider 是否正确包裹`));
+        console.error(
+          new Error(`取值 ${String(p)} 异常，请检查 Provider 是否正确包裹`),
+        );
         return undefined;
       },
     },
   ),
 );
 
-export function createContextStore<P, T extends object, G extends object = (...args: string[]) => any>(
-  storeCreator: (props: P, extend: typeof useExtendStore) => StoreApi<T> & { get: G },
+export function createContextStore<
+  P,
+  T extends object,
+  G extends object = (...args: string[]) => any,
+>(
+  storeCreator: (
+    props: P,
+    extend: typeof useExtendStore,
+  ) => StoreApi<T> & { get: G },
 ) {
   type TFinalStore = StoreApi<T> & {
     get: G;
   };
   type TUseStore = ReturnType<typeof createUseStore<TFinalStore>>;
-  const store = createSafeStore((props: P) => createUseStore(storeCreator(props, useExtendStore)));
+  const store = createSafeStore((props: P) =>
+    createUseStore(storeCreator(props, useExtendStore)),
+  );
   const useStore: TUseStore = ((selector?) => {
     const sotreValue = store?.useStore();
 
     // 生产环境兜底：避免解构报错
     return sotreValue?.(selector) || INVALID_STORE_VALUE;
   }) as TUseStore;
-  useStore.get = ((...props) => (store?.useStore() as any)?.get(...props)) as any;
+  useStore.get = ((...props) =>
+    (store?.useStore() as any)?.get(...props)) as any;
 
   return {
     Provider: store.Provider,

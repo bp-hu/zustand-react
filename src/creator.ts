@@ -39,7 +39,7 @@ export const create = <
 };
 
 export const createStoreWith = <
-  T extends ExtractState<Mutate<StoreApi<any>, Mos>>,
+  T extends ExtractState<any>,
   Mos extends [StoreMutatorIdentifier, unknown][] = [],
   C extends object = {},
 >(
@@ -50,7 +50,7 @@ export const createStoreWith = <
 };
 
 export const useCreateStoreWith = <
-  T extends object,
+  T extends ExtractState<Mutate<StoreApi<any>, Mos>>,
   Mos extends [StoreMutatorIdentifier, unknown][] = [],
   C extends object = {},
 >(
