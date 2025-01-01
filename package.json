@@ -1,5 +1,5 @@
 {
-  "name": "@bp-hu/zustand-react",
+  "name": "@bphu/zustand-react",
   "version": "0.1.0",
   "type": "module",
   "exports": {
