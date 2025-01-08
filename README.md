@@ -226,3 +226,90 @@ const store = createStoreWith(
   }))))
 );
 ```
+
+## Utils
+
+You can reference the built-in utility functions of zustand-react through `@bphu/zustand-react/utils`.
+
+### createContextHook
+
+This is React.Context syntactic sugar, which can help you quickly create and use Context.
+
+```tsx
+function createContextHook<PA, RT>(useExternalStore: (props: PA) => RT): {
+    useStore: () => RT;
+    withStore<P>(Component: React.ComponentType<...>, modelProps?: PA | ((props: P) => PA)): (props: P) => React.JSX.Element;
+    withSelector<C extends React.ComponentType<...>, S extends TSelector<...>>(selector: S, Component: C, arePropsEqual?: ((prev: any, next: any) => boolean) | undefined): (props: React.ComponentProps<...> & Partial<...>) => React.JSX.Element;
+    Provider: ({ children, modelProps, }: {
+        children: React.ReactNode;
+        modelProps?: PA | undefined;
+    }) => React.JSX.Element;
+    Context: React.Context<RT>;
+}
+```
+
+A simple usage example：
+```tsx
+import { useState } from 'react';
+import { createContextHook } from '@bphu/zustand-react/utils';
+
+// create context
+const { withStore, useStore } = createContextHook(function useModel({ defaultCount }: { defaultCount: number }) {
+  const [count, setCount] = useState(defaultCount ?? 0);
+
+  return {
+    count,
+    setCount
+  };
+})
+
+// register context
+const App = withStore(function BaseApp(props: { count: number }) {
+  // use context
+  const { count } = useStore();
+  return ...
+}, (props) => ({
+  defaultCount: props.count,
+}));
+
+// use withSelector for performance optimization in child components
+const Child = withSelector(function Child(props: { count: number }) {
+  return <>{count}</>;
+}, (state) => ({
+  count: state.count,
+});
+```
+
+## parseJSON
+
+This function is used to parse JSON strings. It is used to solve the problem of JSON.parse throwing errors when the string is empty.
+
+```tsx
+import { parseJSON } from '@bphu/zustand-react/utils';
+
+const str = '';
+const obj = parseJSON(str, {});
+```
+
+The `parseJSON` accepts two parameters. The first parameter is the string to be parsed. The second is an optional parameter used to define the default value when parsing fails.
+
+## useUpdateEffect
+
+This hook is used to execute the effect when the state changes.
+
+```tsx
+import { useUpdateEffect } from '@bphu/zustand-react/utils';
+
+export default () => {
+  const [count, setCount] = useState(0);
+
+  useUpdateEffect(() => {
+    console.log('count changed');
+  }, [count]);
+
+  return <button onClick={() => setCount(c => c + 1)}>
+    increase
+  </button>;
+  );
+};
+```
