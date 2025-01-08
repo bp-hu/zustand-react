@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useStore, type StoreApi } from 'zustand';
 import { type ExtractState } from './common';
 import { type StoreWithSelector } from './selector';
-import { createStore as createSafeStore, useUpdateEffect } from './utils';
+import { createContextHook, useUpdateEffect } from './utils';
 
 export * from './creator';
 export * from './selector';
@@ -92,7 +92,7 @@ export function createContextStore<
     get: G;
   };
   type TUseStore = ReturnType<typeof createUseStore<TFinalStore>>;
-  const store = createSafeStore((props: P) =>
+  const store = createContextHook((props: P) =>
     createUseStore(storeCreator(props, useExtendStore)),
   );
   const useStore: TUseStore = ((selector?) => {
