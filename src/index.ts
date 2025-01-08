@@ -44,7 +44,9 @@ export function useExtendStore<
   computedState?: (state: T & E) => C,
 ) {
   useMemo(() => {
-    depsState && store.setState(depsState);
+    if (depsState) {
+      store.setState(depsState);
+    }
   }, []);
 
   useUpdateEffect(() => {

@@ -6,6 +6,8 @@ This package provides [zustand](https://zustand.docs.pmnd.rs/guides/tutorial-tic
 npm install @bphu/zustand-react
 ```
 
+> `@bphu/zustand-react` can be compatible with both zustand v5 and v4.
+
 ## Features
 - TypeScript ready
 - Support computed state
@@ -163,9 +165,8 @@ const { withStore, useStore } = createContextStore(function useModel({ unit }: {
   useEffect(() => {
     const prevUnit = store.getState().unit;
     if (prevUnit === unit) {
-      store.setState((state) => ({
-        ...state,
-        unit,
+      store.setState({
+        unit
       }));
     }
   }, [unit]);
